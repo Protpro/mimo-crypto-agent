@@ -309,6 +309,11 @@ Provide JSON with:
     # ----------------------------------------------------------
 
     def analyze_exchange_flows(
+   # PRODUCTION: Replace with real exchange flow APIs
+   # Whale Alert API: tracks large exchange deposits/withdrawals
+   # Nansen: exchange flow analytics (paid)
+   # Glassnode: exchange balance tracking
+   # Currently returns DEMO data (hardcoded exchange flows)
         self,
         token: str,
         hours: int = 24,
@@ -432,6 +437,11 @@ Provide JSON with:
     # ----------------------------------------------------------
 
     def scan_orderbook_walls(
+   # PRODUCTION: Replace with real exchange order book APIs
+   # Binance: GET /api/v3/depth (free, real-time)
+   # OKX: GET /api/v5/market/books (free, real-time)
+   # Bybit: GET /v5/market/orderbook (free, real-time)
+   # Currently returns DEMO data (hardcoded walls)
         self,
         token: str,
         exchanges: List[str] = None,
@@ -482,6 +492,11 @@ Provide JSON with:
     # ----------------------------------------------------------
 
     def track_cross_chain(
+   # PRODUCTION: Replace with multi-chain explorer APIs
+   # Etherscan + BSCScan + Arbiscan + etc (all free)
+   # Alchemy/Infura: multi-chain RPC calls
+   # DeBank API: cross-chain portfolio tracking
+   # Currently returns DEMO data (hardcoded cross-chain balances)
         self,
         address: str,
         chains: List[str] = None,
@@ -704,6 +719,11 @@ Provide JSON with:
     # ----------------------------------------------------------
 
     def calculate_concentration(
+   # PRODUCTION: Replace with real holder distribution data
+   # Etherscan: token holder list (free)
+   # Dune Analytics: SQL query for holder distribution
+   # Etherscan: GET /api?module=token&action=tokenholderlist
+   # Currently returns DEMO data (simulated holder distribution)
         self,
         token: str,
         chain: str = "ethereum",
@@ -778,6 +798,10 @@ Provide JSON with:
     # ----------------------------------------------------------
 
     def generate_heatmap(
+   # PRODUCTION: Replace with timestamped whale transaction data
+   # Aggregate whale txs by hour/day from on-chain data
+   # Store in local DB (SQLite/Postgres) for fast retrieval
+   # Currently returns DEMO data (random seed for reproducibility)
         self,
         token: str,
         days: int = 7,
@@ -848,6 +872,11 @@ Provide JSON with:
     # ----------------------------------------------------------
 
     def get_whale_transactions(
+   # PRODUCTION: Replace with real on-chain APIs
+   # Etherscan: GET /api?module=token&action=tokenholderlist
+   # Whale Alert: GET /v2/transactions?min_value=100000
+   # Dune Analytics: SQL query for whale transactions
+   # Currently returns DEMO data (120 placeholder transactions)
         self,
         token: str,
         chain: str = "ethereum",
@@ -872,21 +901,83 @@ Provide JSON with:
         return demo_whales
 
     def get_market_metrics(self, token: str) -> Dict[str, Any]:
-        """Fetch Volume, OI, Funding Rate, Liquidation data."""
+        """
+        Fetch Volume, OI, Funding Rate, Liquidation data.
+        
+        PRODUCTION: CoinGecko API (free, no key needed for basic)
+        - Volume + market data: REAL (CoinGecko)
+        - OI + Funding Rate: DEMO (needs Coinglass API in production)
+        - Liquidation data: DEMO (needs Coinglass API in production)
+        """
+        # --- REAL DATA: CoinGecko (free, no API key required) ---
+        coin_id_map = {
+            "ETH": "ethereum", "BTC": "bitcoin", "SOL": "solana",
+            "BNB": "binancecoin", "ARB": "arbitrum", "OP": "optimism",
+            "MATIC": "matic-network", "AVAX": "avalanche-2", "LINK": "chainlink",
+        }
+        coin_id = coin_id_map.get(token.upper(), token.lower())
+        
+        volume_24h = 0
+        volume_change_pct = 0.0
+        price = 0
+        price_change_24h = 0.0
+        market_cap = 0
+        tvl = 0
+        tvl_change_7d = 0.0
+        
+        try:
+            # CoinGecko free API — no key needed, 10-30 calls/min
+            resp = requests.get(
+                f"https://api.coingecko.com/api/v3/coins/{coin_id}",
+                params={"localization": "false", "tickers": "false", "community_data": "false", "developer_data": "false"},
+                timeout=10,
+            )
+            if resp.ok:
+                data = resp.json()
+                md = data.get("market_data", {})
+                volume_24h = md.get("total_volume", {}).get("usd", 0)
+                price = md.get("current_price", {}).get("usd", 0)
+                price_change_24h = md.get("price_change_percentage_24h", 0)
+                market_cap = md.get("market_cap", {}).get("usd", 0)
+                volume_change_pct = md.get("total_volume_change_24h", 0)
+        except Exception:
+            pass  # fallback to demo data below
+        
+        # --- DEMO DATA: Needs Coinglass API in production ---
+        # Coinglass API: https://www.coingecko.com/api (paid) or coinglass.com/api
+        # These require a paid subscription, using estimates for demo
+        oi_estimate = market_cap * 0.35 if market_cap else 8_750_000_000
+        funding_rate = 0.0125  # DEMO — replace with Coinglass /futures/fundingRate
+        long_short_ratio = 1.15  # DEMO — replace with Coinglass /futures/longShortRatio
+        
+        # Liquidation estimates based on price — DEMO
+        liq_long = price * 0.05 * (market_cap / price * 0.001) if price else 125_000_000
+        liq_short = price * 0.05 * (market_cap / price * 0.0008) if price else 89_000_000
+        
         return {
-            "volume_24h": 2_500_000_000,
-            "volume_change_pct": 15.3,
-            "open_interest": 8_750_000_000,
-            "oi_change_pct": 8.2,
-            "funding_rate": 0.0125,
-            "funding_rate_annualized": 45.6,
-            "long_short_ratio": 1.15,
-            "liquidation_long_5pct": 125_000_000,
-            "liquidation_short_5pct": 89_000_000,
-            "top_long_liquidation": 108_500,
-            "top_short_liquidation": 112_300,
-            "tvl": 12_500_000_000,
-            "tvl_change_7d": -2.1,
+            "volume_24h": volume_24h or 2_500_000_000,
+            "volume_change_pct": volume_change_pct or 15.3,
+            "price": price,
+            "price_change_24h": price_change_24h,
+            "market_cap": market_cap,
+            "open_interest": oi_estimate,
+            "oi_change_pct": 8.2,  # DEMO
+            "funding_rate": funding_rate,
+            "funding_rate_annualized": funding_rate * 365 * 3 * 100,  # approx
+            "long_short_ratio": long_short_ratio,
+            "liquidation_long_5pct": liq_long,
+            "liquidation_short_5pct": liq_short,
+            "top_long_liquidation": price * 0.95 if price else 108_500,
+            "top_short_liquidation": price * 1.05 if price else 112_300,
+            "tvl": tvl or 12_500_000_000,
+            "tvl_change_7d": tvl_change_7d or -2.1,
+            "data_source": {
+                "volume": "CoinGecko (real)",
+                "price": "CoinGecko (real)",
+                "oi": "estimated (demo — needs Coinglass API)",
+                "funding": "demo (needs Coinglass API)",
+                "liquidation": "estimated (demo — needs Coinglass API)",
+            },
         }
 
     def analyze_whale_activity(

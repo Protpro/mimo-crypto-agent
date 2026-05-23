@@ -28,6 +28,7 @@ from src.market_intelligence import MarketIntelligence
 from src.sentiment_analyzer import SentimentAnalyzer
 from src.airdrop_detector import AirdropDetector
 from src.contract_analyzer import ContractAnalyzer
+from src.whale_tracker import WhaleTracker
 
 console = Console()
 
@@ -203,8 +204,18 @@ def cmd_demo(args):
     console.print(f"   📊 Signal: {signal.signal} | Confidence: {signal.confidence:.0%}")
     console.print(f"   💡 {signal.reasoning[:150]}...\n")
     
-    # 3. Contract Audit Demo
-    console.print("3️⃣ [bold cyan]Smart Contract Audit Demo[/bold cyan]")
+    # 3. Whale Tracker Demo
+    console.print("3️⃣ [bold cyan]Whale Activity Analysis (ETH)[/bold cyan]")
+    whale = WhaleTracker(client)
+    with console.status("[bold green]Tracking whales..."):
+        signal = whale.analyze_whale_activity("ETH", hours=24)
+    console.print(f"   🐋 Signal: {signal.signal} | Whales: {signal.whale_count}")
+    console.print(f"   💰 Net Flow: ${signal.net_flow:+,.0f}")
+    console.print(f"   📊 Volume: ${signal.volume_24h:,.0f} | OI: ${signal.open_interest:,.0f} | Funding: {signal.funding_rate:.4f}%")
+    console.print(f"   💡 {signal.reasoning[:150]}...\n")
+
+    # 4. Contract Audit Demo
+    console.print("4️⃣ [bold cyan]Smart Contract Audit Demo[/bold cyan]")
     analyzer = ContractAnalyzer(client)
     demo_contract = """
     pragma solidity ^0.8.0;

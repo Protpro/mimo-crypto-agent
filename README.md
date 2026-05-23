@@ -17,6 +17,7 @@
 - 📊 **Market Intelligence** — AI-driven trading signals with deep reasoning
 - 📰 **Sentiment Analysis** — Social media & news sentiment tracking
 - 🎁 **Airdrop Detection** — AI-powered airdrop opportunity discovery
+- 🐋 **Whale Tracker** — Track 100+ whale wallets with Volume, OI & Funding Rate
 - 🛡️ **Contract Auditing** — Smart contract security analysis
 
 ## 🧠 Why MiMo-V2.5-Pro?
@@ -72,6 +73,7 @@ mimo-crypto-agent/
 │   ├── sentiment_analyzer.py   # Sentiment analysis module
 │   ├── airdrop_detector.py     # Airdrop opportunity detector
 │   └── contract_analyzer.py    # Smart contract auditor
+└── whale_tracker.py        # Whale activity tracker
 ├── main.py                     # CLI entry point
 ├── requirements.txt
 └── .env.example
@@ -130,6 +132,7 @@ result = analyzer.analyze_texts(texts, asset="Bitcoin")
 print(f"Sentiment: {result.label}")  # BULLISH, BEARISH, etc.
 ```
 
+- 🐋 **Whale Tracker** — Track 100+ whale wallets with Volume, OI & Funding Rate
 ### Smart Contract Auditing
 
 ```python

@@ -14,21 +14,23 @@
 
 **MiMo Crypto Intelligence Agent** is a comprehensive crypto analysis toolkit that leverages **Xiaomi MiMo-V2.5-Pro's** advanced reasoning capabilities for:
 
+- 🐋 **Whale Tracker** — Track 100+ whale wallets per token with Volume, OI, Funding Rate, and Liquidation Levels
 - 📊 **Market Intelligence** — AI-driven trading signals with deep reasoning
-- 📰 **Sentiment Analysis** — Social media & news sentiment tracking
-- 🎁 **Airdrop Detection** — AI-powered airdrop opportunity discovery
-- 🐋 **Whale Tracker** — Track 100+ whale wallets with Volume, OI & Funding Rate
-- 🛡️ **Contract Auditing** — Smart contract security analysis
+- 📰 **Sentiment Analysis** — Social media & news sentiment tracking with narrative shift detection
+- 🛡️ **Contract Auditing** — Smart contract security analysis (Solidity/EVM)
+- 🎁 **Airdrop Detection** — AI-powered airdrop opportunity discovery and farming strategies
+
+![Demo Screenshot](assets/demo.png)
 
 ## 🧠 Why MiMo-V2.5-Pro?
 
 MiMo-V2.5-Pro excels at this use case because of:
 
-1. **Deep Reasoning** — Complex multi-step analysis for market patterns
-2. **Code Understanding** — Native Solidity/smart contract comprehension
-3. **Structured Output** — Reliable JSON generation for programmatic use
-4. **Long Context** — Analyze multiple data sources simultaneously
-5. **Cost Efficiency** — 100T token program makes it accessible for heavy usage
+1. **Deep Reasoning** — Complex multi-step analysis correlating whale behavior with market metrics
+2. **Code Understanding** — Native Solidity/smart contract comprehension for auditing
+3. **Structured Output** — Reliable JSON generation for programmatic trading decisions
+4. **Long Context** — Simultaneous analysis of 100+ whale transactions alongside derivatives data
+5. **Cost Efficiency** — 100T token program makes it accessible for heavy daily usage
 
 ## 🚀 Quick Start
 
@@ -40,7 +42,7 @@ MiMo-V2.5-Pro excels at this use case because of:
 ### Installation
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/mimo-crypto-agent.git
+git clone https://github.com/Protpro/mimo-crypto-agent.git
 cd mimo-crypto-agent
 pip install -r requirements.txt
 cp .env.example .env
@@ -50,6 +52,9 @@ cp .env.example .env
 ### Usage
 
 ```bash
+# Track whale activity (100+ wallets, Volume, OI, Funding Rate)
+python main.py whale ethereum
+
 # Analyze a crypto asset
 python main.py analyze bitcoin
 
@@ -59,7 +64,7 @@ python main.py sentiment "BTC ETH SOL"
 # Audit a smart contract
 python main.py audit path/to/contract.sol
 
-# Run interactive demo
+# Run interactive demo (all modules)
 python main.py demo
 ```
 
@@ -71,12 +76,15 @@ mimo-crypto-agent/
 │   ├── mimo_client.py          # MiMo API client (OpenAI-compatible)
 │   ├── market_intelligence.py  # Market analysis engine
 │   ├── sentiment_analyzer.py   # Sentiment analysis module
+│   ├── whale_tracker.py        # Whale activity tracker (100+ wallets)
 │   ├── airdrop_detector.py     # Airdrop opportunity detector
 │   └── contract_analyzer.py    # Smart contract auditor
-└── whale_tracker.py        # Whale activity tracker
 ├── main.py                     # CLI entry point
 ├── requirements.txt
-└── .env.example
+├── .env.example
+├── LICENSE
+└── assets/
+    └── demo.png                # Demo screenshot
 ```
 
 ## 🔧 API Integration
@@ -103,13 +111,34 @@ response = client.analyze(
 
 ## 📊 Features in Detail
 
-### Market Intelligence
+### 🐋 Whale Tracker
 
 ```python
 from src.mimo_client import MiMoClient
-from src.market_intelligence import MarketIntelligence
+from src.whale_tracker import WhaleTracker
 
 client = MiMoClient()
+whale = WhaleTracker(client)
+
+# Track 100+ whale wallets for ETH over 24h
+signal = whale.analyze_whale_activity("ETH", hours=24)
+
+print(f"Signal: {signal.signal}")           # ACCUMULATION / DISTRIBUTION / NEUTRAL
+print(f"Whales: {signal.whale_count}")      # 100+
+print(f"Net Flow: ${signal.net_flow:+,.0f}")
+print(f"Volume 24h: ${signal.volume_24h:,.0f}")
+print(f"Open Interest: ${signal.open_interest:,.0f}")
+print(f"Funding Rate: {signal.funding_rate:.4f}%")
+
+# Generate alert
+print(whale.generate_alert(signal))
+```
+
+### Market Intelligence
+
+```python
+from src.market_intelligence import MarketIntelligence
+
 market = MarketIntelligence(client)
 
 # Get trading signal
@@ -132,7 +161,6 @@ result = analyzer.analyze_texts(texts, asset="Bitcoin")
 print(f"Sentiment: {result.label}")  # BULLISH, BEARISH, etc.
 ```
 
-- 🐋 **Whale Tracker** — Track 100+ whale wallets with Volume, OI & Funding Rate
 ### Smart Contract Auditing
 
 ```python
@@ -150,23 +178,26 @@ for vuln in audit.vulnerabilities:
 
 ## 🎯 Use Cases
 
-1. **DeFi Traders** — Get AI-powered trading signals with detailed reasoning
-2. **Airdrop Farmers** — Discover and prioritize airdrop opportunities
+1. **DeFi Traders** — Whale tracking + AI trading signals with Volume/OI/Funding Rate
+2. **Airdrop Farmers** — Discover and prioritize airdrop opportunities across 9+ chains
 3. **Smart Contract Developers** — Pre-deployment security audits
 4. **Crypto Researchers** — Market sentiment and narrative analysis
-5. **Portfolio Managers** — AI-driven portfolio optimization
+5. **Portfolio Managers** — AI-driven portfolio optimization with whale flow data
 
 ## 📈 Performance
 
 - **Analysis Speed**: < 5 seconds per asset analysis
-- **Accuracy**: Competitive with human analysts on backtested signals
+- **Whale Tracking**: 100+ wallets per token per timeframe
 - **Cost**: ~$0.01-0.05 per analysis with MiMo API
 - **Scalability**: Async support for batch processing
 
 ## 🛣️ Roadmap
 
-- [ ] Real-time Twitter/X sentiment integration
-- [ ] On-chain data analysis (Dune Analytics, Etherscan)
+- [x] Whale tracker with 100+ wallets
+- [x] Volume, OI, Funding Rate integration
+- [x] Liquidation level analysis
+- [x] Smart contract auditing
+- [ ] Real-time on-chain data (Etherscan, Coinglass APIs)
 - [ ] Telegram bot interface
 - [ ] Multi-chain portfolio tracker
 - [ ] Automated trading signals webhook
